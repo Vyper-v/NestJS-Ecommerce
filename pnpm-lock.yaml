@@ -19,7 +19,9 @@ specifiers:
   '@types/jest': 28.1.8
   '@types/multer': ^1.4.7
   '@types/node': ^16.0.0
+  '@types/passport': ^1.0.11
   '@types/passport-jwt': ^3.0.7
+  '@types/passport-local': ^1.0.34
   '@types/supertest': ^2.0.11
   '@typescript-eslint/eslint-plugin': ^5.0.0
   '@typescript-eslint/parser': ^5.0.0
@@ -34,6 +36,7 @@ specifiers:
   mongoose: ^6.6.7
   passport: ^0.6.0
   passport-jwt: ^4.0.0
+  passport-local: ^1.0.0
   prettier: ^2.3.2
   pug: ^3.0.2
   reflect-metadata: ^0.1.13
@@ -64,6 +67,7 @@ dependencies:
   mongoose: 6.6.7
   passport: 0.6.0
   passport-jwt: 4.0.0
+  passport-local: 1.0.0
   pug: 3.0.2
   reflect-metadata: 0.1.13
   rimraf: 3.0.2
@@ -79,7 +83,9 @@ devDependencies:
   '@types/jest': 28.1.8
   '@types/multer': 1.4.7
   '@types/node': 16.11.68
+  '@types/passport': 1.0.11
   '@types/passport-jwt': 3.0.7
+  '@types/passport-local': 1.0.34
   '@types/supertest': 2.0.12
   '@typescript-eslint/eslint-plugin': 5.40.1_ukgdydjtebaxmxfqp5v5ulh64y
   '@typescript-eslint/parser': 5.40.1_z4bbprzjrhnsfa24uvmcbu7f5q
@@ -1346,6 +1352,14 @@ packages:
     dependencies:
       '@types/express': 4.17.14
       '@types/jsonwebtoken': 8.5.8
+      '@types/passport-strategy': 0.2.35
+    dev: true
+
+  /@types/passport-local/1.0.34:
+    resolution: {integrity: sha512-PSc07UdYx+jhadySxxIYWuv6sAnY5e+gesn/5lkPKfBeGuIYn9OPR+AAEDq73VRUh6NBTpvE/iPE62rzZUslog==}
+    dependencies:
+      '@types/express': 4.17.14
+      '@types/passport': 1.0.11
       '@types/passport-strategy': 0.2.35
     dev: true
 
@@ -4421,6 +4435,13 @@ packages:
     resolution: {integrity: sha512-BwC0n2GP/1hMVjR4QpnvqA61TxenUMlmfNjYNgK0ZAs0HK4SOQkHcSv4L328blNTLtHq7DbmvyNJiH+bn6C5Mg==}
     dependencies:
       jsonwebtoken: 8.5.1
+      passport-strategy: 1.0.0
+    dev: false
+
+  /passport-local/1.0.0:
+    resolution: {integrity: sha512-9wCE6qKznvf9mQYYbgJ3sVOHmCWoUNMVFoZzNoznmISbhnNNPhN9xfY3sLmScHMetEJeoY7CXwfhCe7argfQow==}
+    engines: {node: '>= 0.4.0'}
+    dependencies:
       passport-strategy: 1.0.0
     dev: false
 

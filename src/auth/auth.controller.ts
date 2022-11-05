@@ -1,24 +1,18 @@
+import { JwtAuthGuard } from './guards/jwt.guard';
 import { AuthService } from './auth.service';
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Get,
   Post,
-  Redirect,
-  Render,
   Request,
-  Session,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { JwtAuthGuard } from './guards/jwt.guard';
 import { UsersService } from 'src/users/users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { LocalAuthGuard } from './guards/local.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -27,43 +21,29 @@ export class AuthController {
     private usersService: UsersService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  postLogin(@Request() req, @Session() session) {
-    this.authService.login(req.user);
-  }
-
-  @Render('pages/auth/login')
-  @Get('login')
-  getLogin() {
-    return { title: 'Login' };
+  postLogin(@Request() req) {
+    console.log(req.user);
+    return this.authService.login(req.user);
   }
 
   @Post('signup')
   @UseInterceptors(FileInterceptor('image'))
-  @UseInterceptors(ClassSerializerInterceptor)
-  async postSignup(@Body() payload, @UploadedFile() image) {
-    try {
-      const user = await this.usersService.create({
-        ...payload,
-        image: image.filename,
-      });
-      return new UserEntity(user);
-    } catch (error) {
-      return { message: error.message };
-    }
-  }
-
-  @Render('pages/auth/signup')
-  @Get('signup')
-  getSignup() {
-    return { title: 'Signup' };
+  async postSignup(
+    @Body() payload,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    const access = await this.authService.registerUser({
+      ...payload,
+      image: image.filename,
+    });
+    return access;
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('logout')
-  @Redirect('/', 301)
-  logout() {
-    return { message: 'You have been logged out' };
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
   }
 }

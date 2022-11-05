@@ -42,3 +42,7 @@
 - [ ] Profile
 - [ ] Server Info
 - [ ] Chat Room
+
+## Email
+
+- [ ] Nodemailer

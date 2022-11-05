@@ -9,6 +9,7 @@ import configuration from './config/configuration';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -32,5 +33,6 @@ import { MulterModule } from '@nestjs/platform-express';
     MessagesModule,
     AuthModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

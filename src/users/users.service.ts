@@ -9,23 +9,27 @@ import { UserDocument } from './schemas/user.schema';
 export class UsersService {
   constructor(@InjectModel('User') private UserModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto) {
+  create(createUserDto: CreateUserDto) {
     return this.UserModel.create(createUserDto);
   }
 
-  async findAll() {
+  findAll() {
     return this.UserModel.find().exec();
   }
 
-  async findOne(id: string) {
+  findByEmail(email: string) {
+    return this.UserModel.findOne({ email }).exec();
+  }
+
+  findOne(id: string) {
     return this.UserModel.findById(id).exec();
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
+  update(id: string, updateUserDto: UpdateUserDto) {
     return this.UserModel.findByIdAndUpdate(id, updateUserDto);
   }
 
-  async remove(id: string) {
+  remove(id: string) {
     return this.UserModel.findByIdAndDelete(id);
   }
 }

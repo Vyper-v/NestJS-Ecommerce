@@ -10,11 +10,12 @@ import { MulterModule } from '@nestjs/platform-express';
 
 import { UserStorage } from './multer/storage';
 import { imageFilter } from './multer/imageFilter';
+import { LocalStrategy } from './strategies/local.strategy';
 
 @Module({
   imports: [
     UsersModule,
-    PassportModule.register({ session: true }),
+    PassportModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('auth.jwt.secret'),
@@ -29,7 +30,7 @@ import { imageFilter } from './multer/imageFilter';
       }),
     }),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, LocalStrategy],
   exports: [AuthService],
   controllers: [AuthController],
 })

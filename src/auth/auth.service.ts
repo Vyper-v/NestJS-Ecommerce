@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { CreateUserDto } from './../users/dto/create-user.dto';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { compare } from 'bcrypt';
 
@@ -11,20 +11,41 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.usersService.findOne(username);
+  async registerUser(payload: CreateUserDto & { verifyPassword: string }) {
+    const exists = await this.usersService.findByEmail(payload.email);
+
+    if (exists) {
+      throw new NotAcceptableException('User already exists');
+    }
+
+    if (payload.password !== payload.verifyPassword) {
+      throw new NotAcceptableException('Passwords are not the same');
+    }
+
+    delete payload.verifyPassword;
+
+    const user = await this.usersService.create(payload);
+    return this.login(user);
+  }
+
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.usersService.findByEmail(email);
+
     if (!user) {
       return null;
     }
-    const isMatch = await compare(password, user.password);
-    if (user && isMatch) {
-      return new UserEntity(user);
+
+    const passwordMatches = await compare(password, user.password);
+
+    if (user && passwordMatches) {
+      return user.toObject();
     }
     return null;
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
+    const payload = { email: user.email, sub: user.id, role: user.role };
+
     return {
       access_token: this.jwtService.sign(payload),
     };
