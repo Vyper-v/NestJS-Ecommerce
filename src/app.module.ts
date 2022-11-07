@@ -3,13 +3,14 @@ import { ProductsModule } from './products/products.module';
 import { CartsModule } from './carts/carts.module';
 import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
-import { MessagesModule } from './messages/messages.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
-import { MulterModule } from '@nestjs/platform-express';
 import { AppController } from './app.controller';
+
+import { MessagesModule } from './messages/messages.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AppController } from './app.controller';
     OrdersModule,
     MessagesModule,
     AuthModule,
+    MailModule,
   ],
   controllers: [AppController],
 })

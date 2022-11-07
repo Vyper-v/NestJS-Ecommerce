@@ -1,0 +1,13 @@
+extends ../../templates/_layout.pug
+block headers 
+
+block content
+  ul#messages
+    each message in messages
+      li
+        span= message.email
+        br
+        span= message.text
+        br
+        span= message.createdAt
+      br

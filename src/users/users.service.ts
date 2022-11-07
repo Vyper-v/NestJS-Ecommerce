@@ -14,15 +14,15 @@ export class UsersService {
   }
 
   findAll() {
-    return this.UserModel.find().exec();
+    return this.UserModel.find();
   }
 
   findByEmail(email: string) {
-    return this.UserModel.findOne({ email }).exec();
+    return this.UserModel.findOne({ email });
   }
 
   findOne(id: string) {
-    return this.UserModel.findById(id).exec();
+    return this.UserModel.findById(id);
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {

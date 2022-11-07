@@ -3,12 +3,14 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { compare } from 'bcrypt';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async registerUser(payload: CreateUserDto & { verifyPassword: string }) {
@@ -25,6 +27,14 @@ export class AuthService {
     delete payload.verifyPassword;
 
     const user = await this.usersService.create(payload);
+
+    await this.mailService.sendEmailWithTemplate(
+      user.email,
+      'Welcome to useSpices',
+      'welcome',
+      { user: user.toObject() },
+    );
+
     return this.login(user);
   }
 

@@ -8,29 +8,30 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { MulterModule } from '@nestjs/platform-express';
 
-import { UserStorage } from './multer/storage';
+import { createStorage } from './multer/storage';
 import { imageFilter } from './multer/imageFilter';
 import { LocalStrategy } from './strategies/local.strategy';
+import { SessionSerializer } from './session.serializer';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
     UsersModule,
-    PassportModule,
+    PassportModule.register({ session: true }),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('auth.jwt.secret'),
-        signOptions: { expiresIn: '15min' },
+        signOptions: { expiresIn: '1d' },
       }),
       inject: [ConfigService],
     }),
-    MulterModule.registerAsync({
-      useFactory: () => ({
-        storage: UserStorage,
-        fileFilter: imageFilter,
-      }),
+    MulterModule.register({
+      storage: createStorage('users'),
+      fileFilter: imageFilter,
     }),
+    MailModule,
   ],
-  providers: [AuthService, JwtStrategy, LocalStrategy],
+  providers: [AuthService, JwtStrategy, LocalStrategy, SessionSerializer],
   exports: [AuthService],
   controllers: [AuthController],
 })

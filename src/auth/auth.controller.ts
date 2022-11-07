@@ -1,10 +1,10 @@
-import { JwtAuthGuard } from './guards/jwt.guard';
 import { AuthService } from './auth.service';
 import {
   Body,
   Controller,
   Get,
   Post,
+  Redirect,
   Request,
   UploadedFile,
   UseGuards,
@@ -13,6 +13,7 @@ import {
 import { UsersService } from 'src/users/users.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LocalAuthGuard } from './guards/local.guard';
+import { AuthenticatedGuard } from './guards/authenticated.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -23,8 +24,14 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  postLogin(@Request() req) {
-    console.log(req.user);
+  @Redirect('/products', 301)
+  postLogin() {
+    return { message: 'Logged succesfully' };
+  }
+
+  @UseGuards(AuthenticatedGuard)
+  @Get('token')
+  async getToken(@Request() req) {
     return this.authService.login(req.user);
   }
 
@@ -36,12 +43,13 @@ export class AuthController {
   ) {
     const access = await this.authService.registerUser({
       ...payload,
-      image: image.filename,
+      image: image.originalname,
     });
+
     return access;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthenticatedGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;

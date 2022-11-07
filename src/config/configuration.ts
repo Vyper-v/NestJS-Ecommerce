@@ -14,13 +14,17 @@ export default function configuration() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 3600000,
+        maxAge: 2 * 3.6e6,
       },
     },
     auth: {
       jwt: {
         secret: process.env.JWT_SECRET,
       },
+    },
+    nodemailer: {
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS,
     },
   };
 }

@@ -3,17 +3,13 @@ import { Document } from 'mongoose';
 
 export type MessageDocument = Message & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Message {
-  @Prop({ ref: 'User' })
+  @Prop({ required: true })
+  text: string;
+  @Prop({ required: true })
   email: string;
-  @Prop()
-  message: string;
-  @Prop({
-    default: Date.now,
-  })
-  date: Date;
-  @Prop()
+  @Prop({ required: true })
   type: string;
 }
 

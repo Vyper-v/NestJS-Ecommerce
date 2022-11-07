@@ -1,7 +1,15 @@
+import { Expose, Transform } from 'class-transformer';
+
 export class Product {
-  id: string;
+  @Expose({ name: 'id' })
+  @Transform(({ value }) => value.toString())
+  _id: string;
   name: string;
   description: string;
   price: number;
   stock: number;
+
+  constructor(partial: Partial<Product>) {
+    Object.assign(this, partial);
+  }
 }

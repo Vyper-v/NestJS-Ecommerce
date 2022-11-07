@@ -1,26 +1,30 @@
-import { Controller, Get, Redirect, Render } from '@nestjs/common';
+import { JwtAuthGuard } from './auth/guards/jwt.guard';
+import {
+  Controller,
+  Get,
+  Next,
+  Redirect,
+  Render,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Public } from './auth/decorators/public.decorator';
+import { NextFunction, Request } from 'express';
+import { AuthenticatedGuard } from './auth/guards/authenticated.guard';
 
-@Controller('app')
+@Controller()
 export class AppController {
-  @Get('login')
+  @Get()
   @Public()
-  @Render('pages/auth/login')
+  @Render('pages/index')
   getLogin() {
-    return { title: 'Login' };
-  }
-
-  @Get('signup')
-  @Public()
-  @Render('pages/auth/signup')
-  getSignup() {
-    return { title: 'Signup' };
+    return { title: 'Authentication' };
   }
 
   @Get('logout')
-  @Public()
+  @UseGuards(AuthenticatedGuard)
   @Redirect('/', 301)
-  logout() {
-    return { message: 'You have been logged out' };
+  logout(@Req() req: Request, @Next() next: NextFunction) {
+    req.logout((err) => !!err && next(err));
   }
 }

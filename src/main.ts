@@ -1,12 +1,15 @@
-import { join } from 'path';
 import * as passport from 'passport';
 import * as session from 'express-session';
+import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { PageNotFoundExceptionFilter } from './exceptions/filters/PageNotFound.exception';
+import { UnauthorizedExceptionFilter } from './exceptions/filters/Unauthorized.exception';
+import { ForbiddenExceptionFilter } from './exceptions/filters/Forbidden.exception';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -19,7 +22,13 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(
+    new PageNotFoundExceptionFilter(),
+    new UnauthorizedExceptionFilter(),
+    new ForbiddenExceptionFilter(),
+  );
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('pug');
@@ -38,6 +47,7 @@ async function bootstrap() {
   app.use(passport.session());
 
   SwaggerModule.setup('docs', app, document);
+
   await app.listen(config.get<number>('port'), async () => {
     console.log(`Server is running on ${await app.getUrl()}`);
   });
