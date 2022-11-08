@@ -1,9 +1,11 @@
 import { CreateUserDto } from './../users/dto/create-user.dto';
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
 import { compare } from 'bcrypt';
 import { MailService } from 'src/mail/mail.service';
+import { UserExistsException } from './exceptions/UserExists.exception';
+import { PasswordNotMatchException } from './exceptions/PasswordNotMatch.exception';
 
 @Injectable()
 export class AuthService {
@@ -17,11 +19,11 @@ export class AuthService {
     const exists = await this.usersService.findByEmail(payload.email);
 
     if (exists) {
-      throw new NotAcceptableException('User already exists');
+      throw new UserExistsException();
     }
 
     if (payload.password !== payload.verifyPassword) {
-      throw new NotAcceptableException('Passwords are not the same');
+      throw new PasswordNotMatchException();
     }
 
     delete payload.verifyPassword;

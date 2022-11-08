@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, FilterQuery } from 'mongoose';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductDocument } from './schemas/product.schema';
@@ -15,8 +15,8 @@ export class ProductsService {
     return this.productModel.create(createProductDto);
   }
 
-  findAll() {
-    return this.productModel.find();
+  findAll(filter: FilterQuery<ProductDocument> = {}) {
+    return this.productModel.find(filter);
   }
 
   findOne(id: string) {
@@ -29,6 +29,10 @@ export class ProductsService {
 
   update(id: string, updateProductDto: UpdateProductDto) {
     return this.productModel.findByIdAndUpdate(id, updateProductDto);
+  }
+
+  updateImage(id: string, image: string) {
+    return this.productModel.findByIdAndUpdate(id, { image });
   }
 
   remove(id: string) {

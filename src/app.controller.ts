@@ -1,30 +1,14 @@
-import { JwtAuthGuard } from './auth/guards/jwt.guard';
-import {
-  Controller,
-  Get,
-  Next,
-  Redirect,
-  Render,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
-import { Public } from './auth/decorators/public.decorator';
-import { NextFunction, Request } from 'express';
-import { AuthenticatedGuard } from './auth/guards/authenticated.guard';
+import { Response } from 'express';
+import { Controller, Get, Req, Res } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('App')
 @Controller()
 export class AppController {
   @Get()
-  @Public()
-  @Render('pages/index')
-  getLogin() {
-    return { title: 'Authentication' };
-  }
-
-  @Get('logout')
-  @UseGuards(AuthenticatedGuard)
-  @Redirect('/', 301)
-  logout(@Req() req: Request, @Next() next: NextFunction) {
-    req.logout((err) => !!err && next(err));
+  getLogin(@Req() req, @Res() res: Response) {
+    res.render('pages/index', {
+      messages: req.flash('authError'),
+    });
   }
 }

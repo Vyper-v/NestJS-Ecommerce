@@ -1,19 +1,25 @@
-import * as passport from 'passport';
+import helmet from 'helmet';
+import flash = require('connect-flash');
+import * as morgan from 'morgan';
 import * as session from 'express-session';
+import * as passport from 'passport';
+import { WinstonModule } from 'nest-winston';
 import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { PageNotFoundExceptionFilter } from './exceptions/filters/PageNotFound.exception';
-import { UnauthorizedExceptionFilter } from './exceptions/filters/Unauthorized.exception';
-import { ForbiddenExceptionFilter } from './exceptions/filters/Forbidden.exception';
+import { PageNotFoundExceptionFilter } from './filters/PageNotFound.filter';
+import { winstonInstance } from './winston.instance';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: WinstonModule.createLogger({ instance: winstonInstance }),
+  });
   const config = app.get(ConfigService);
+  const logger = new Logger('Requests');
 
   const swaggerConfig = new DocumentBuilder()
     .addBearerAuth()
@@ -23,12 +29,13 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(
-    new PageNotFoundExceptionFilter(),
-    new UnauthorizedExceptionFilter(),
-    new ForbiddenExceptionFilter(),
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      enableDebugMessages: true,
+    }),
   );
+  app.useGlobalFilters(new PageNotFoundExceptionFilter());
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('pug');
@@ -42,9 +49,22 @@ async function bootstrap() {
       },
     }),
   );
-
   app.use(passport.initialize());
   app.use(passport.session());
+  app.use(flash());
+  app.use(helmet());
+
+  if (config.get<string>('NODE_ENV') !== 'production') {
+    app.use(
+      morgan('combined', {
+        stream: {
+          write: (message) => {
+            logger.log(message);
+          },
+        },
+      }),
+    );
+  }
 
   SwaggerModule.setup('docs', app, document);
 

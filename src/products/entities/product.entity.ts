@@ -8,6 +8,7 @@ export class Product {
   description: string;
   price: number;
   stock: number;
+  discount: number;
 
   constructor(partial: Partial<Product>) {
     Object.assign(this, partial);

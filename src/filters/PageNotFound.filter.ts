@@ -1,8 +1,8 @@
 import {
   ArgumentsHost,
   Catch,
-  NotFoundException,
   ExceptionFilter,
+  NotFoundException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
@@ -10,12 +10,12 @@ import { Request, Response } from 'express';
 export class PageNotFoundExceptionFilter implements ExceptionFilter {
   catch(exception: NotFoundException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
+    const res = ctx.getResponse<Response>();
+    const req = ctx.getRequest<Request>();
 
-    response.render('pages/404', {
-      title: request.url + ' not found',
-      url: request.url,
+    return res.render('pages/404', {
+      title: 'Page Not Found',
+      url: req.url,
     });
   }
 }

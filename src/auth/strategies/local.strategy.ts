@@ -3,10 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import {
   ClassSerializerInterceptor,
   Injectable,
-  NotFoundException,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from '../auth.service';
+import { UserNotFoundException } from '../exceptions/UserNotFound.exception';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -19,10 +19,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   @UseInterceptors(ClassSerializerInterceptor)
   async validate(email: string, password: string): Promise<any> {
     const user = await this.authService.validateUser(email, password);
-    if (user === null) {
-      // user not found
-      throw new NotFoundException('User not found');
+    if (!user) {
+      throw new UserNotFoundException();
     }
+
     return {
       email: user.email,
       id: user._id.toString(),

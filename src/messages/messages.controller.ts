@@ -2,7 +2,9 @@ import { AuthenticatedGuard } from './../auth/guards/authenticated.guard';
 import { Controller, Get, Param, Render, Res, UseGuards } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Chat')
 @Controller('chat')
 @UseGuards(AuthenticatedGuard)
 export class MessagesController {
