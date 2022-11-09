@@ -17,7 +17,6 @@ import { presave } from './schemas/hooks/presave.hook';
       },
     ]),
   ],
-  controllers: [],
   providers: [UsersService],
   exports: [UsersService],
 })

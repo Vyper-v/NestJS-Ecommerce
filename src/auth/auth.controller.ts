@@ -7,18 +7,16 @@ import {
   Post,
   Redirect,
   Req,
-  UploadedFile,
   UseFilters,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { LocalAuthGuard } from './guards/local.guard';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
 import { NextFunction, Request } from 'express';
 import { AuthFilter } from './filters/Auth.filter';
 import { ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -44,17 +42,8 @@ export class AuthController {
 
   @Post('signup')
   @UseFilters(AuthFilter)
-  @UseInterceptors(FileInterceptor('image'))
-  async postSignup(
-    @Body() payload,
-    @UploadedFile() image: Express.Multer.File,
-  ) {
-    const access = await this.authService.registerUser({
-      ...payload,
-      image: image?.originalname || '',
-    });
-
-    return access;
+  async postSignup(@Body() createUserDto: CreateUserDto) {
+    return this.authService.registerUser(createUserDto);
   }
 
   @UseGuards(AuthenticatedGuard)

@@ -1,4 +1,4 @@
-import { CreateUserDto } from './../users/dto/create-user.dto';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/users/users.service';
@@ -15,20 +15,14 @@ export class AuthService {
     private mailService: MailService,
   ) {}
 
-  async registerUser(payload: CreateUserDto & { verifyPassword: string }) {
-    const exists = await this.usersService.findByEmail(payload.email);
+  async registerUser(createUserDto: CreateUserDto) {
+    const exists = await this.usersService.findByEmail(createUserDto.email);
 
     if (exists) {
       throw new UserExistsException();
     }
 
-    if (payload.password !== payload.verifyPassword) {
-      throw new PasswordNotMatchException();
-    }
-
-    delete payload.verifyPassword;
-
-    const user = await this.usersService.create(payload);
+    const user = await this.usersService.create(createUserDto);
 
     await this.mailService.sendEmailWithTemplate(
       user.email,

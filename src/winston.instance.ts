@@ -1,30 +1,24 @@
 import { createLogger, transports, format } from 'winston';
-import { utilities as nestWinstonModuleUtilities } from 'nest-winston';
+import { utilities } from 'nest-winston';
+
+const { colorize, timestamp, combine, json } = format;
+const { Console, File } = transports;
+const { nestLike } = utilities.format;
 
 export const winstonInstance = createLogger({
   transports: [
-    new transports.Console({
-      format: format.combine(
-        format.colorize(),
-        format.timestamp(),
-        nestWinstonModuleUtilities.format.nestLike(),
-      ),
+    new Console({
+      format: combine(colorize(), timestamp(), nestLike()),
     }),
-    new transports.File({
-      filename: 'logs/error.log',
+    new File({
+      filename: 'logs/errors.json',
       level: 'error',
-      format: format.combine(
-        format.timestamp(),
-        nestWinstonModuleUtilities.format.nestLike(),
-      ),
+      format: json(),
     }),
-    new transports.File({
+    new File({
       filename: 'logs/warn.log',
       level: 'warn',
-      format: format.combine(
-        format.timestamp(),
-        nestWinstonModuleUtilities.format.nestLike(),
-      ),
+      format: combine(timestamp(), nestLike()),
     }),
   ],
 });

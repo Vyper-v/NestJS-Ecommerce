@@ -13,10 +13,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { PageNotFoundExceptionFilter } from './filters/PageNotFound.filter';
 import { winstonInstance } from './winston.instance';
+import { MongooseCastErrorFilter } from './filters/mongoose/cast.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: WinstonModule.createLogger({ instance: winstonInstance }),
+    cors: {
+      origin: '*',
+    },
   });
   const config = app.get(ConfigService);
   const logger = new Logger('Requests');
@@ -35,7 +39,10 @@ async function bootstrap() {
       enableDebugMessages: true,
     }),
   );
-  app.useGlobalFilters(new PageNotFoundExceptionFilter());
+  app.useGlobalFilters(
+    new PageNotFoundExceptionFilter(),
+    new MongooseCastErrorFilter(),
+  );
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('pug');
@@ -52,7 +59,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(flash());
-  app.use(helmet());
+  app.use(helmet(config.get('helmet')));
 
   if (config.get<string>('NODE_ENV') !== 'production') {
     app.use(
