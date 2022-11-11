@@ -15,7 +15,8 @@ import { MailModule } from './mail/mail.module';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
-      expandVariables: true,
+      // envFilePath: `.${process.env.NODE_ENV || 'development'}.env`,
+      // expandVariables: true,
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
