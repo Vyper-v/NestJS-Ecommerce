@@ -1,4 +1,4 @@
-form(action="/auth/signup" method="post" enctype="multipart/form-data")
+form(action="/auth/signup" method="post")
   label(class="form-label" for="username") Username
   input#username(class="form-control" type="text" name="username" autocomplete="username" placeholder="Username" required)
   label(class="form-label" for="email") Email
@@ -24,7 +24,8 @@ script.
   const form = document.querySelector('form');
   form.addEventListener('submit', (e) => {
     if (password.value !== confirmPassword.value) {
-      e.preventDefault();
+    e.preventDefault();
       confirmPassword.setCustomValidity("Passwords don't match");
     }
+
   });

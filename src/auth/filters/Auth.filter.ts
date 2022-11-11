@@ -9,21 +9,19 @@ import { PasswordNotMatchException } from '../exceptions/PasswordNotMatch.except
 import { UserExistsException } from '../exceptions/UserExists.exception';
 import { UserNotFoundException } from '../exceptions/UserNotFound.exception';
 
-@Catch()
+@Catch(UserNotFoundException, PasswordNotMatchException, UserExistsException)
 export class AuthFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     if (
-      [
-        UserNotFoundException,
-        PasswordNotMatchException,
-        UserExistsException,
-      ].some((except) => exception instanceof except)
+      [UserNotFoundException, PasswordNotMatchException].some(
+        (exc) => exception instanceof exc,
+      )
     ) {
       request.flash('loginError', exception.message);
-      return response.redirect('/');
     }
+    return response.redirect('/');
   }
 }

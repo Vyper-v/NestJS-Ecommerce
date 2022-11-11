@@ -5,7 +5,6 @@ import { UsersService } from 'src/users/users.service';
 import { compare } from 'bcrypt';
 import { MailService } from 'src/mail/mail.service';
 import { UserExistsException } from './exceptions/UserExists.exception';
-import { PasswordNotMatchException } from './exceptions/PasswordNotMatch.exception';
 
 @Injectable()
 export class AuthService {
@@ -23,15 +22,16 @@ export class AuthService {
     }
 
     const user = await this.usersService.create(createUserDto);
+    const userObject = user.toObject();
 
     await this.mailService.sendEmailWithTemplate(
-      user.email,
+      userObject.email,
       'Welcome to useSpices',
       'welcome',
-      { user: user.toObject() },
+      { user: user },
     );
 
-    return this.login(user);
+    return this.login(user.toObject());
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -50,10 +50,8 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id, role: user.role };
-
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(user),
     };
   }
 }

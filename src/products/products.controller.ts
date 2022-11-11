@@ -1,4 +1,3 @@
-import { JwtAuthGuard } from './../auth/guards/jwt.guard';
 import {
   Controller,
   Get,
@@ -12,25 +11,28 @@ import {
   UploadedFile,
   Logger,
   Put,
+  UseFilters,
 } from '@nestjs/common';
-import { ProductsService } from './products.service';
+import { ApiTags, ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
+import { AuthenticatedGuard } from 'src/auth/guards/authenticated.guard';
+import { JwtAuthGuard } from './../auth/guards/jwt.guard';
+import { RolesGuard } from 'src/auth/guards/role.guard';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ApiTags, ApiBearerAuth, ApiCookieAuth } from '@nestjs/swagger';
-import { RolesGuard } from 'src/auth/guards/role.guard';
+import { ProductsService } from './products.service';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/enums/roles.enum';
-import { AuthenticatedGuard } from 'src/auth/guards/authenticated.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ProductExceptionFilter } from './filters/ProductException.filter';
 
 // El usuario debe estar autenticado por jwt y session, y debe tener minimo el rol de usuario para acceder a los endpoints get.
 @ApiTags('Products')
 @ApiBearerAuth()
 @ApiCookieAuth()
 @Controller('products')
+@UseFilters(ProductExceptionFilter)
 @UseGuards(JwtAuthGuard, AuthenticatedGuard, RolesGuard)
 export class ProductsController {
-  private readonly logger = new Logger(ProductsController.name);
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
@@ -56,7 +58,6 @@ export class ProductsController {
   @Get('category/:category')
   @Roles(Role.User, Role.Admin)
   findCategory(@Param('category') category: string) {
-    this.logger;
     return this.productsService.findCategory(category);
   }
 

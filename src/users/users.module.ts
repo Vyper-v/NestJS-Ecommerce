@@ -3,6 +3,7 @@ import { UsersService } from './users.service';
 import { UserSchema } from './schemas/user.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { presave } from './schemas/hooks/presave.hook';
+import { updateOne } from './schemas/hooks/updateOne.hook';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { presave } from './schemas/hooks/presave.hook';
         useFactory: () => {
           const schema = UserSchema;
           schema.pre('save', presave);
+          schema.pre('updateOne', updateOne);
           return schema;
         },
       },

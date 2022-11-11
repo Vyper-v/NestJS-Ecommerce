@@ -1,0 +1,21 @@
+- var total = 0;
+
+h1 Thank you for your order!
+
+h2 Your order is #{state} and will be delivered to #{address}. 
+
+h3 Details of your order(#{orderId}) are as follows:
+
+each item in products 
+  h4 #{item.product.name} 
+  span $#{item.product.price} x #{item.quantity} = $#{item.product.price * item.quantity}
+
+  p #{item.product.description}
+  - total = total + item.product.price * item.quantity
+
+h3 Total: $ #{total}
+
+
+
+
+

@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ProductSchema } from './schemas/product.schema';
 import { createStorage } from 'src/auth/multer/storage';
 import { imageFilter } from 'src/auth/multer/imageFilter';
-import { presave } from './schemas/hooks/presave.hook';
+import { updateOne } from './schemas/hooks/updateOne.hook';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { presave } from './schemas/hooks/presave.hook';
         name: 'Product',
         useFactory: () => {
           const schema = ProductSchema;
-          schema.pre('save', presave);
+          schema.pre('updateOne', updateOne);
           return schema;
         },
       },

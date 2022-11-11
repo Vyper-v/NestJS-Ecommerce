@@ -19,10 +19,8 @@ import { MailModule } from 'src/mail/mail.module';
     UsersModule,
     PassportModule.register({ session: true }),
     JwtModule.registerAsync({
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('auth.jwt.secret'),
-        signOptions: { expiresIn: '1d' },
-      }),
+      useFactory: (configService: ConfigService) =>
+        configService.get('auth.jwt'),
       inject: [ConfigService],
     }),
     MulterModule.register({

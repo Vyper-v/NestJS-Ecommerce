@@ -1,4 +1,3 @@
-import { CreateItemDTO } from './dto/create-item.dto';
 import {
   Controller,
   Get,
@@ -10,23 +9,27 @@ import {
   Req,
   UseGuards,
   Logger,
+  UseFilters,
+  ParseArrayPipe,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger';
-import { CartsService } from './carts.service';
-import { CreateCartDto } from './dto/create-cart.dto';
-import { UpdateCartDto } from './dto/update-cart.dto';
-import { Request } from 'express';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { AuthenticatedGuard } from 'src/auth/guards/authenticated.guard';
-import { RolesGuard } from 'src/auth/guards/role.guard';
+import { ApiBearerAuth, ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
-import { Role } from 'src/enums/roles.enum';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { RolesGuard } from 'src/auth/guards/role.guard';
 import { UsersService } from 'src/users/users.service';
+import { Role } from 'src/enums/roles.enum';
+import { CartsService } from './carts.service';
+import { UpdateCartDto } from './dto/update-cart.dto';
+import { CreateItemDTO } from './dto/create-item.dto';
+import { CartExceptionFilter } from './filters/CartException.filter';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @ApiBearerAuth()
 @ApiCookieAuth()
 @ApiTags('Carts')
 @Controller('carts')
+@UseFilters(CartExceptionFilter)
 @UseGuards(JwtAuthGuard, AuthenticatedGuard, RolesGuard)
 @Roles(Role.User, Role.Admin)
 export class CartsController {
@@ -36,14 +39,21 @@ export class CartsController {
   ) {}
 
   @Post()
-  async create(@Body() createItemDto: CreateItemDTO[], @Req() req: any) {
-    const user = await this.usersService.findOne(req.user.id);
+  async create(
+    @Body(new ParseArrayPipe({ items: CreateItemDTO }))
+    createItemDto: CreateItemDTO[],
+    @Req() req: any,
+  ) {
+    const user = await this.usersService.findByEmail(req.user.email);
 
-    return this.cartsService.create({
-      email: user.email,
-      products: createItemDto,
-      address: user.address,
-    });
+    return this.cartsService.create(createItemDto, user.toObject());
+  }
+
+  @Post('checkout/:id')
+  async checkout(@Param('id') id: string, @Req() req: any) {
+    const user = await this.usersService.findByEmail(req.user.email);
+
+    return this.cartsService.checkout(id, user.toObject());
   }
 
   @Get()

@@ -1,31 +1,19 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema } from 'mongoose';
+import { IItem, ItemSchema } from './item.schema';
 
-export type CartDocument = Cart & Document;
-
-export type ItemDocument = Item & Document;
-
-@Schema()
-export class Item {
-  @Prop({ required: true, ref: 'Product' })
-  productId: string;
-
-  @Prop({ required: true })
-  quantity: number;
-}
-
-export const ItemSchema = SchemaFactory.createForClass(Item);
-
-@Schema({ timestamps: true })
-export class Cart {
-  @Prop({ required: true })
+export interface ICart {
   email: string;
-
-  @Prop({ required: true, type: [ItemSchema], default: [] })
-  products: Item[];
-
-  @Prop({ required: true })
   address: string;
+  products: IItem[];
 }
 
-export const CartSchema = SchemaFactory.createForClass(Cart);
+export const CartSchema = new Schema<ICart>({
+  email: String,
+  address: String,
+  products: {
+    type: [ItemSchema],
+    required: true,
+  },
+});
+
+export type CartDocument = ICart & Document;

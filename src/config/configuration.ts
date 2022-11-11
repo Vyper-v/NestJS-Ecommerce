@@ -14,12 +14,19 @@ export default function configuration() {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        maxAge: 2 * 3.6e6,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+      },
+      store: {
+        uri: process.env.DATABASE_URI,
+        collection: process.env.SESSION_COLLECTION,
       },
     },
     auth: {
       jwt: {
         secret: process.env.JWT_SECRET,
+        signOptions: {
+          expiresIn: '1d',
+        },
       },
     },
     nodemailer: {

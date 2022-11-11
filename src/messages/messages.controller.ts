@@ -3,10 +3,11 @@ import { Controller, Get, Param, Render, Res, UseGuards } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { Response } from 'express';
 import { ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @ApiTags('Chat')
 @Controller('chat')
-@UseGuards(AuthenticatedGuard)
+@UseGuards(AuthenticatedGuard, JwtAuthGuard)
 export class MessagesController {
   constructor(private readonly messagesService: MessagesService) {}
 

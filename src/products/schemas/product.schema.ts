@@ -3,8 +3,18 @@ import { Document } from 'mongoose';
 
 export type ProductDocument = Product & Document;
 
+export interface IProduct {
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
+  stock: number;
+  category: string;
+  discount: number;
+}
+
 @Schema()
-export class Product {
+export class Product implements IProduct {
   @Prop()
   name: string;
   @Prop()

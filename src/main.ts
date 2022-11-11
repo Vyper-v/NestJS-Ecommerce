@@ -1,10 +1,11 @@
-import helmet from 'helmet';
-import flash = require('connect-flash');
-import * as morgan from 'morgan';
+import * as connectMongoDBSession from 'connect-mongodb-session';
 import * as session from 'express-session';
 import * as passport from 'passport';
-import { WinstonModule } from 'nest-winston';
+import * as morgan from 'morgan';
+import helmet from 'helmet';
+import flash = require('connect-flash');
 import { join } from 'path';
+import { WinstonModule } from 'nest-winston';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from '@nestjs/common';
@@ -13,7 +14,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { PageNotFoundExceptionFilter } from './filters/PageNotFound.filter';
 import { winstonInstance } from './winston.instance';
-import { MongooseCastErrorFilter } from './filters/mongoose/cast.filter';
+
+const MongoDBStore = connectMongoDBSession(session);
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -36,13 +38,11 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      enableDebugMessages: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
     }),
   );
-  app.useGlobalFilters(
-    new PageNotFoundExceptionFilter(),
-    new MongooseCastErrorFilter(),
-  );
+  app.useGlobalFilters(new PageNotFoundExceptionFilter());
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   app.setViewEngine('pug');
@@ -54,6 +54,7 @@ async function bootstrap() {
       cookie: {
         maxAge: config.get<number>('session.cookie.maxAge'),
       },
+      store: new MongoDBStore(config.get('session.store')),
     }),
   );
   app.use(passport.initialize());

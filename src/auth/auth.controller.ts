@@ -17,6 +17,7 @@ import { NextFunction, Request } from 'express';
 import { AuthFilter } from './filters/Auth.filter';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { PasswordNotMatchException } from './exceptions/PasswordNotMatch.exception';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -43,6 +44,10 @@ export class AuthController {
   @Post('signup')
   @UseFilters(AuthFilter)
   async postSignup(@Body() createUserDto: CreateUserDto) {
+    if (createUserDto.password !== createUserDto.confirmPassword) {
+      throw new PasswordNotMatchException();
+    }
+    delete createUserDto.confirmPassword;
     return this.authService.registerUser(createUserDto);
   }
 
