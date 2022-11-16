@@ -18,14 +18,17 @@ form(action="/auth/signup" method="post")
   label(class="form-label" for="confirmPassword" ) Confirm Password
   input#confirmPassword(class="form-control" type="password" name="confirmPassword" autocomplete="new-password" placeholder="Confirm Password" required)
   button(class="btn btn-primary mt-3" type="submit") Sign up
-script. 
-  const password = document.querySelector('#password');
-  const confirmPassword = document.querySelector('#confirmPassword');
-  const form = document.querySelector('form');
-  form.addEventListener('submit', (e) => {
-    if (password.value !== confirmPassword.value) {
-    e.preventDefault();
-      confirmPassword.setCustomValidity("Passwords don't match");
-    }
+//- script. 
+//-   const password = document.querySelector('#password');
+//-   const confirmPassword = document.querySelector('#confirmPassword');
+//-   const form = document.querySelector('form');
 
-  });
+//-   form.addEventListener('submit', (e) => {
+//-     if (password.value !== confirmPassword.value) {
+//-       e.preventDefault();
+//-       confirmPassword.setCustomValidity("Passwords don't match");
+//-       form.reportValidity();
+
+//-     }
+
+//-   });

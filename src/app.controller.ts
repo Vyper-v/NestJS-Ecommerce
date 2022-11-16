@@ -8,7 +8,7 @@ export class AppController {
   @Get()
   getLogin(@Req() req, @Res() res: Response) {
     res.render('pages/index', {
-      messages: req.flash('authError'),
+      messages: req.flash('loginError'),
     });
   }
 }
