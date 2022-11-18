@@ -1,0 +1,14 @@
+extends ../templates/_layout.pug
+block content
+    h1= title
+    .list-group.d-grid.gap-2.border-0.w-auto
+        h2.list-group-item.rounded-3.py-3 CPUS 
+            span.d-block.small.opacity-50 #{cpus} Cores
+        h2.list-group-item.rounded-3.py-3 RAM
+            span.d-block.small.opacity-50 #{memory} MiB
+        h2.list-group-item.rounded-3.py-3 Environment 
+            span.d-block.small.opacity-50 #{env}
+        h2.list-group-item.rounded-3.py-3 Port 
+            span.d-block.small.opacity-50 #{port}
+        h2.list-group-item.rounded-3.py-3 Node Version
+            span.d-block.small.opacity-50 #{nodeVersion}
