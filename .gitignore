@@ -36,6 +36,5 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 # .env files
-.env
-.production.env
-.development.env
+*.env
+!.example.env
